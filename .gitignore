@@ -1,0 +1,3 @@
+# Python cache dosyaları
+__pycache__/
+*.py[cod]

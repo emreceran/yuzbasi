@@ -1,0 +1,61 @@
+<odoo>
+    <data>
+<!--        -->
+<!--<template id="label_inherit" inherit_id="mrp.label_production_view_pdf" name="label inherit">-->
+<!--        <xpath expr="//table" position="replace">-->
+<!--            <table class="my-0 table table-sm table-borderless">-->
+<!--                <t t-foreach="range(nRows)" t-as="row">-->
+<!--                    <tr>-->
+<!--                        <t t-foreach="range(nCols)" t-as="column">-->
+<!--                            <t t-if="index_to_qtys and not current_quantity">-->
+<!--                                <t t-set="index_to_qty" t-value="index_to_qtys.popitem()"/>-->
+<!--                                <t t-set="move_line" t-value="move_lines[index_to_qty[0]]"/>-->
+<!--                                <t t-set="current_quantity" t-value="index_to_qty[1]"/>-->
+<!--                            </t>-->
+
+<!--                            <t t-if="current_quantity">-->
+<!--                                <t t-set="make_invisible" t-value="False"/>-->
+<!--                                <t t-set="current_quantity" t-value="current_quantity - 1"/>-->
+<!--                            </t>-->
+<!--                            <t t-else="">-->
+<!--                                <t t-set="make_invisible" t-value="True"/>-->
+<!--                            </t>-->
+<!--                            <td t-att-style="make_invisible and 'visibility:hidden'">-->
+<!--                                <div t-if="move_line" t-translation="off" t-att-style="'position:relative; width:43mm; height:19mm; border: 1px solid %s;' % (move_line.env.user.company_id.primary_color or 'black')">-->
+<!--                                    <div class="o_label_name  fw-bold">-->
+<!--                                        <span t-out="move_line.product_id.display_name">Product</span>-->
+<!--                                        <div>-->
+<!--                                            <span t-out="move_line.product_id.display_name">Product</span>-->
+<!--                                        </div>-->
+<!--                                        <div><span>Quantity : </span>-->
+<!--                                            <span t-if="move_line.product_uom_id.category_id == uom_categ_unit">1.0</span>-->
+<!--                                            <span t-else="" t-out="move_line.quantity">5</span>-->
+<!--                                            <span t-field="move_line.product_uom_id" groups="uom.group_uom">UOM id</span>-->
+<!--                                        </div>-->
+
+<!--                                         <div><span>Quantity : </span>-->
+
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                    <t t-if="move_line.product_id.tracking != 'none' and (move_line.lot_name or move_line.lot_id)">-->
+<!--                                        <div t-field="move_line.lot_name or move_line.lot_id.name" t-options="{'widget': 'barcode', 'img_style': 'width:100%;height:35%'}"/>-->
+<!--                                        <div class="o_label_4x12 text-center"><span t-out="move_line.lot_name or move_line.lot_id.name">Demo Barcode</span></div>-->
+<!--                                    </t>-->
+<!--                                    <t t-elif="move_line.product_id.tracking == 'none' and move_line.product_id.barcode">-->
+<!--                                        <div t-field="move_line.product_id.barcode" t-options="{'widget': 'barcode', 'img_style': 'width:100%;height:35%'}"/>-->
+<!--                                        <div class="o_label_4x12 text-center"><span t-out="move_line.product_id.barcode">12345678901</span></div>-->
+<!--                                    </t>-->
+<!--                                    <t t-else="">-->
+<!--                                        <span class="text-muted">No barcode available</span>-->
+<!--                                    </t>-->
+<!--                                </div>-->
+<!--                            </td>-->
+<!--                        </t>-->
+<!--                    </tr>-->
+<!--                </t>-->
+<!--            </table>-->
+
+<!--        </xpath>-->
+<!--      </template>-->
+    </data>
+</odoo>

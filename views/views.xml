@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Rapor Tanımı -->
+    <record id="action_report_mo_label" model="ir.actions.report">
+        <field name="name">Üretim Emri Etiketi (PDF)</field>
+        <field name="model">mrp.production</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">yuzbasi.report_mo_label</field>  <!-- ✅ DOĞRU -->
+        <field name="report_file">yuzbasi.report_mo_label</field>  <!-- ✅ DOĞRU -->
+        <field name="paperformat_id" ref="product.paperformat_label_sheet"/>
+        <field name="print_report_name">'Üretim Emri - %s' % object.name</field>
+        <field name="binding_model_id" ref="mrp.model_mrp_production"/>
+        <field name="binding_type">report</field>
+    </record>
+
+
+    <template id="report_mo_label">
+        <t t-call="web.basic_layout">
+
+            <t t-set="uom_categ_unit" t-value="env.ref('uom.product_uom_categ_unit')"/>
+
+            <t t-foreach="docs" t-as="uretim">
+                <t t-set="move_line" t-value="uretim.move_finished_ids.move_line_ids.filtered(lambda ml: ml.move_id.production_id.state == 'done' and ml.state == 'done' and ml.quantity)"/>
+                <div style="border: 2px solid #005F6B; padding: 10px; width: 90mm; font-family: Arial, sans-serif;">
+
+                    <div style="text-align: center; font-weight: bold; font-size: 16px; margin-bottom: 5px;">
+                        <t t-esc="uretim.urun_adi" />
+
+                    </div>
+
+                    <!-- İçerik Tablosu -->
+                    <table class="table table-striped" style="width: 100%; font-size: 12px;">
+                        <tr>
+                            <td><strong>Açıklamalar</strong></td>
+                            <td><t t-esc="uretim.urun_aciklama" /></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Proje </strong></td>
+                            <td><t t-esc="uretim.project_id.name" /> </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Kalıp Kodu</strong></td>
+                            <td><t t-esc="uretim.kalip_id.code" /></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Sorumlu Şef</strong></td>
+                            <td><t t-esc="uretim.user_id.name" /></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Döküm Tarihi</strong></td>
+                            <td><t t-esc="uretim.date_start.strftime('%d.%m.%Y')" /></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Boy</strong></td>
+                            <td><t t-esc="uretim.boy" /> cm</td>
+                        </tr>
+                        <tr>
+                            <td><strong>En</strong></td>
+                            <td><t t-esc="uretim.en" /> cm</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Yükseklik</strong></td>
+                            <td><t t-esc="uretim.uzunluk" /> m</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Ürün Ağırlığı (Ton)</strong></td>
+                            <td><t t-esc="uretim.agirlik" /></td>
+                        </tr>
+
+                        <tr>
+                            <td style="border: 1px solid Transparent!important;" >
+                                <!-- Şirket Logosu -->
+                                <div style="text-align: center; margin-top: 10px;">
+                                    <img t-att-src="'/web/image?model=res.company&amp;id=%d&amp;field=logo' % uretim.company_id.id"
+                                         style="max-width: 60mm; max-height: 20mm;" />
+                                </div>
+
+                            </td>
+
+                            <td style="border: 1px solid Transparent!important;" >
+                                <div t-if="move_line" t-translation="off" t-att-style="'position:relative;' ">
+
+                                    <div style="font-size: 24px; text-align: center; font-weight: bold; font-family: Arial, sans-serif;">
+                                        <img src="yuzbasi/static/src/img/ce_logo.png" style="width: 40px; height: auto;" /> 2163
+                                    </div>
+
+
+                                    <t t-if="move_line.product_id.tracking != 'none' and (move_line.lot_name or move_line.lot_id)">
+                                        <div t-field="move_line.lot_name or move_line.lot_id.name" t-options="{'widget': 'barcode', 'img_style': 'width:100%;height:35%'}"/>
+                                        <div class="o_label_4x12 text-center"><span t-out="move_line.lot_name or move_line.lot_id.name">Demo Barcode</span></div>
+                                    </t>
+                                    <t t-elif="move_line.product_id.tracking == 'none' and move_line.product_id.barcode">
+                                        <div t-field="move_line.product_id.barcode" t-options="{'widget': 'barcode', 'img_style': 'width:100%;height:35%'}"/>
+                                        <div class="o_label_4x12 text-center"><span t-out="move_line.product_id.barcode">12345678901</span></div>
+                                    </t>
+                                    <t t-else="">
+                                        <span class="text-muted">No barcode available</span>
+                                    </t>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+
+
+
+                    <!-- Barkod (KALDIĞI GİBİ) -->
+
+                </div>
+            </t>
+        </t>
+    </template>
+
+</odoo>
+
