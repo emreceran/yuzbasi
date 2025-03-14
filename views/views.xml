@@ -1,17 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+
+
+
+    <!-- Kağıt Formatı Tanımı -->
+    <record id="paperformat_mo_label" model="report.paperformat">
+        <field name="name">Üretim Etiketi</field>
+        <field name="default" eval="True"/>
+        <field name="format">custom</field>
+        <field name="page_height">100</field>  <!-- Yükseklik 100mm -->
+        <field name="page_width">100</field>   <!-- Genişlik 100mm -->
+        <field name="margin_top">1</field>
+        <field name="margin_bottom">1</field>
+        <field name="margin_left">1</field>
+        <field name="margin_right">1</field>
+        <field name="orientation">Portrait</field>
+        <field name="dpi">90</field>
+    </record>
+
+
+
+
     <!-- Rapor Tanımı -->
     <record id="action_report_mo_label" model="ir.actions.report">
         <field name="name">Üretim Emri Etiketi (PDF)</field>
         <field name="model">mrp.production</field>
         <field name="report_type">qweb-pdf</field>
-        <field name="report_name">yuzbasi.report_mo_label</field>  <!-- ✅ DOĞRU -->
-        <field name="report_file">yuzbasi.report_mo_label</field>  <!-- ✅ DOĞRU -->
-        <field name="paperformat_id" ref="product.paperformat_label_sheet"/>
+        <field name="report_name">yuzbasi.report_mo_label</field>
+        <field name="report_file">yuzbasi.report_mo_label</field>
+        <field name="paperformat_id" ref="yuzbasi.paperformat_mo_label"/>
         <field name="print_report_name">'Üretim Emri - %s' % object.name</field>
         <field name="binding_model_id" ref="mrp.model_mrp_production"/>
         <field name="binding_type">report</field>
     </record>
+
+
+<!--    &lt;!&ndash; Rapor Tanımı &ndash;&gt;-->
+<!--    <record id="action_report_mo_label" model="ir.actions.report">-->
+<!--        <field name="name">Üretim Emri Etiketi (PDF)</field>-->
+<!--        <field name="model">mrp.production</field>-->
+<!--        <field name="report_type">qweb-pdf</field>-->
+<!--        <field name="report_name">yuzbasi.report_mo_label</field>  &lt;!&ndash; ✅ DOĞRU &ndash;&gt;-->
+<!--        <field name="report_file">yuzbasi.report_mo_label</field>  &lt;!&ndash; ✅ DOĞRU &ndash;&gt;-->
+<!--        <field name="paperformat_id" ref="product.paperformat_label_sheet"/>-->
+<!--        <field name="print_report_name">'Üretim Emri - %s' % object.name</field>-->
+<!--        <field name="binding_model_id" ref="mrp.model_mrp_production"/>-->
+<!--        <field name="binding_type">report</field>-->
+<!--    </record>-->
 
 
     <template id="report_mo_label">
@@ -23,20 +58,20 @@
                 <t t-set="move_line" t-value="uretim.move_finished_ids.move_line_ids.filtered(lambda ml: ml.move_id.production_id.state == 'done' and ml.state == 'done' and ml.quantity)"/>
                 <div style="border: 2px solid #005F6B; padding: 10px; width: 90mm; font-family: Arial, sans-serif;">
 
-                    <div style="text-align: center; font-weight: bold; font-size: 16px; margin-bottom: 5px;">
+                    <div style="text-align: center; font-weight: bold; font-size: 12px; margin-bottom:5px; ">
                         <t t-esc="uretim.urun_adi" />
 
                     </div>
 
                     <!-- İçerik Tablosu -->
-                    <table class="table table-striped" style="width: 100%; font-size: 12px;">
+                    <table class="table table-striped" style="width: 100%; font-size: 9px;">
                         <tr>
                             <td><strong>Açıklamalar</strong></td>
                             <td><t t-esc="uretim.urun_aciklama" /></td>
                         </tr>
                         <tr>
                             <td><strong>Proje </strong></td>
-                            <td><t t-esc="uretim.project_id.name" /> </td>
+                            <td><t t-esc="uretim.project_id" /> </td>
                         </tr>
                         <tr>
                             <td><strong>Kalıp Kodu</strong></td>
@@ -63,39 +98,44 @@
                             <td><t t-esc="uretim.uzunluk" /> m</td>
                         </tr>
                         <tr>
-                            <td><strong>Ürün Ağırlığı (Ton)</strong></td>
+                            <td><strong>Ürün Ağırlığı</strong></td>
                             <td><t t-esc="uretim.agirlik" /></td>
                         </tr>
 
-                        <tr>
+                        <tr style="overflow:hidden">
                             <td style="border: 1px solid Transparent!important;" >
                                 <!-- Şirket Logosu -->
                                 <div style="text-align: center; margin-top: 10px;">
-                                    <img t-att-src="'/web/image?model=res.company&amp;id=%d&amp;field=logo' % uretim.company_id.id"
-                                         style="max-width: 60mm; max-height: 20mm;" />
+                                    <img src="yuzbasi/static/src/img/ylogo.jpeg"
+                                         style="max-width: 20mm; max-height: auto;" />
                                 </div>
 
                             </td>
 
                             <td style="border: 1px solid Transparent!important;" >
-                                <div t-if="move_line" t-translation="off" t-att-style="'position:relative;' ">
+                                <div class="d-flex flex-row align-items-center justify-content-center " t-if="move_line" t-translation="off" t-att-style="'position:relative;' ">
 
-                                    <div style="font-size: 24px; text-align: center; font-weight: bold; font-family: Arial, sans-serif;">
-                                        <img src="yuzbasi/static/src/img/ce_logo.png" style="width: 40px; height: auto;" /> 2163
+                                    <div  style="display: flex; flex-direction: column; font-size: 8px; text-align: center; font-weight: bold; font-family: Arial, sans-serif;">
+                                        <div>
+                                            <img src="yuzbasi/static/src/img/ce_logo.png" style="width: 40px; height: auto;" />
+                                        </div>
+                                        <div>1783</div>
                                     </div>
 
 
-                                    <t t-if="move_line.product_id.tracking != 'none' and (move_line.lot_name or move_line.lot_id)">
+                                   <div class="" style="witdh:60% overflow:hidden">
+                                        <t t-if="move_line.product_id.tracking != 'none' and (move_line.lot_name or move_line.lot_id)">
                                         <div t-field="move_line.lot_name or move_line.lot_id.name" t-options="{'widget': 'barcode', 'img_style': 'width:100%;height:35%'}"/>
                                         <div class="o_label_4x12 text-center"><span t-out="move_line.lot_name or move_line.lot_id.name">Demo Barcode</span></div>
                                     </t>
                                     <t t-elif="move_line.product_id.tracking == 'none' and move_line.product_id.barcode">
-                                        <div t-field="move_line.product_id.barcode" t-options="{'widget': 'barcode', 'img_style': 'width:100%;height:35%'}"/>
+                                        <div t-field="move_line.product_id.barcode" t-options="{'widget': 'barcode', 'img_style': 'width:10mm%;height:auto'}"/>
                                         <div class="o_label_4x12 text-center"><span t-out="move_line.product_id.barcode">12345678901</span></div>
                                     </t>
                                     <t t-else="">
                                         <span class="text-muted">No barcode available</span>
                                     </t>
+                                   </div>
                                 </div>
                             </td>
                         </tr>
@@ -112,3 +152,166 @@
 
 </odoo>
 
+
+<!--<?xml version="1.0" encoding="utf-8"?>-->
+<!--<odoo>-->
+
+
+<!--    &lt;!&ndash; Kağıt Formatı Tanımı &ndash;&gt;-->
+<!--    <record id="paperformat_mo_label" model="report.paperformat">-->
+<!--        <field name="name">Üretim Etiketi</field>-->
+<!--        <field name="default" eval="True"/>-->
+<!--        <field name="format">custom</field>-->
+<!--        <field name="page_height">100</field>  &lt;!&ndash; Yükseklik 100mm &ndash;&gt;-->
+<!--        <field name="page_width">100</field>   &lt;!&ndash; Genişlik 100mm &ndash;&gt;-->
+<!--        <field name="margin_top">1</field>-->
+<!--        <field name="margin_bottom">1</field>-->
+<!--        <field name="margin_left">1</field>-->
+<!--        <field name="margin_right">1</field>-->
+<!--        <field name="orientation">Portrait</field>-->
+<!--        <field name="dpi">90</field>-->
+<!--    </record>-->
+
+
+
+
+<!--    &lt;!&ndash; Rapor Tanımı &ndash;&gt;-->
+<!--    <record id="action_report_mo_label" model="ir.actions.report">-->
+<!--        <field name="name">Üretim Emri Etiketi (PDF)</field>-->
+<!--        <field name="model">mrp.production</field>-->
+<!--        <field name="report_type">qweb-pdf</field>-->
+<!--        <field name="report_name">yuzbasi.report_mo_label</field>-->
+<!--        <field name="report_file">yuzbasi.report_mo_label</field>-->
+<!--        <field name="paperformat_id" ref="yuzbasi.paperformat_mo_label"/>-->
+<!--        <field name="print_report_name">'Üretim Emri - %s' % object.name</field>-->
+<!--        <field name="binding_model_id" ref="mrp.model_mrp_production"/>-->
+<!--        <field name="binding_type">report</field>-->
+<!--    </record>-->
+
+
+
+
+
+
+<!--    <template id="report_mo_label">-->
+<!--        <t t-call="web.basic_layout">-->
+
+<!--            <t t-set="uom_categ_unit" t-value="env.ref('uom.product_uom_categ_unit')"/>-->
+
+<!--            <t t-foreach="docs" t-as="uretim">-->
+<!--                <t t-set="move_line" t-value="uretim.move_finished_ids.move_line_ids.filtered(lambda ml: ml.move_id.production_id.state == 'done' and ml.state == 'done' and ml.quantity)"/>-->
+<!--                <div style="border: 2px solid #005F6B; padding: 10px; width: 90mm; font-family: Arial, sans-serif;">-->
+
+<!--                    <div style="text-align: center; font-weight: bold; font-size: 10px; margin-bottom: 1px;">-->
+<!--                        <t t-esc="uretim.urun_adi" />-->
+
+<!--                    </div>-->
+
+<!--                    &lt;!&ndash; İçerik Tablosu &ndash;&gt;-->
+<!--                    <table class="table table-striped" style="width: 100%; font-size: 8px;">-->
+<!--                        <tr>-->
+<!--                            <td><strong>Açıklamalar</strong></td>-->
+<!--                            <td><t t-esc="uretim.urun_aciklama" /></td>-->
+<!--                        </tr>-->
+<!--                        <tr>-->
+<!--                            <td><strong>Proje </strong></td>-->
+<!--                            <td><t t-esc="uretim.project_id.name" /> </td>-->
+<!--                        </tr>-->
+<!--                        <tr>-->
+<!--                            <td><strong>Kalıp Kodu</strong></td>-->
+<!--                            <td><t t-esc="uretim.kalip_id.code" /></td>-->
+<!--                        </tr>-->
+<!--                        <tr>-->
+<!--                            <td><strong>Sorumlu Şef</strong></td>-->
+<!--                            <td><t t-esc="uretim.user_id.name" /></td>-->
+<!--                        </tr>-->
+<!--                        <tr>-->
+<!--                            <td><strong>Döküm Tarihi</strong></td>-->
+<!--                            <td><t t-esc="uretim.date_start.strftime('%d.%m.%Y')" /></td>-->
+<!--                        </tr>-->
+<!--                        <tr>-->
+<!--                            <td><strong>Boy</strong></td>-->
+<!--                            <td><t t-esc="uretim.boy" /> cm</td>-->
+<!--                        </tr>-->
+<!--                        <tr>-->
+<!--                            <td><strong>En</strong></td>-->
+<!--                            <td><t t-esc="uretim.en" /> cm</td>-->
+<!--                        </tr>-->
+<!--                        <tr>-->
+<!--                            <td><strong>Yükseklik</strong></td>-->
+<!--                            <td><t t-esc="uretim.uzunluk" /> m</td>-->
+<!--                        </tr>-->
+<!--                        <tr>-->
+<!--                            <td><strong>Ürün Ağırlığı (Ton)</strong></td>-->
+<!--                            <td><t t-esc="uretim.agirlik" /></td>-->
+<!--                        </tr>-->
+
+
+
+<!--                    </table>-->
+
+
+
+<!--                    &lt;!&ndash; Alt Bölüm: Logo (Sol) - CE 1783 (Orta) - Barkod (Sağ) &ndash;&gt;-->
+<!--                    <div class="d-flex flex-row align-items-center justify-content-between" style=" width: 100%; margin-top: 5px;">-->
+
+<!--                        &lt;!&ndash; Şirket Logosu (Sol) &ndash;&gt;-->
+<!--                        <div style="text-align: center; width: 25%;">-->
+<!--                            <img src="yuzbasi/static/src/img/ylogo.jpeg" style="width: 100px; height: auto;" />-->
+<!--                        </div>-->
+
+
+<!--                        &lt;!&ndash; CE 1783 &ndash;&gt;-->
+<!--                        <div style="text-align: center;">-->
+<!--                            <img src="yuzbasi/static/src/img/ce_logo.png" style="width: 40px; height: auto;" />-->
+<!--                            <div style="font-size: 14px; font-weight: bold;">1783</div>-->
+<!--                        </div>-->
+
+<!--                        &lt;!&ndash; Barkod &ndash;&gt;-->
+<!--                        <div>-->
+<!--                            <t t-if="move_line.product_id.tracking != 'none' and (move_line.lot_name or move_line.lot_id)">-->
+<!--                                <div t-field="move_line.lot_name or move_line.lot_id.name" t-options="{'widget': 'barcode', 'img_style': 'width:100%;height:35%'}"/>-->
+<!--                                <div class="o_label_4x12 text-center"><span t-out="move_line.lot_name or move_line.lot_id.name">Demo Barcode</span></div>-->
+<!--                            </t>-->
+<!--                            <t t-elif="move_line.product_id.tracking == 'none' and move_line.product_id.barcode">-->
+<!--                                <div t-field="move_line.product_id.barcode" t-options="{'widget': 'barcode', 'img_style': 'width:100%;height:35%'}"/>-->
+<!--                                <div class="o_label_4x12 text-center"><span t-out="move_line.product_id.barcode">12345678901</span></div>-->
+<!--                            </t>-->
+<!--                            <t t-else="">-->
+<!--                                <span class="text-muted">No barcode available</span>-->
+<!--                            </t>-->
+<!--                        </div>-->
+
+
+
+<!--                    </div>-->
+
+<!--                </div>-->
+
+<!--                &lt;!&ndash;                    &lt;!&ndash; Alt Bölüm: 3 Tane Yan Yana Div &ndash;&gt;&ndash;&gt;-->
+<!--                &lt;!&ndash;                    <div class="d-flex flexx-row" style=" width: 100%; margin-top: 5px;">&ndash;&gt;-->
+
+<!--                &lt;!&ndash;                        &lt;!&ndash; Sol Yazı &ndash;&gt;&ndash;&gt;-->
+<!--                &lt;!&ndash;                        <div style="text-align: center; width: 33%; font-size: 14px; font-weight: bold;">&ndash;&gt;-->
+<!--                &lt;!&ndash;                            SOL YAZI&ndash;&gt;-->
+<!--                &lt;!&ndash;                        </div>&ndash;&gt;-->
+
+<!--                &lt;!&ndash;                        &lt;!&ndash; Orta Yazı &ndash;&gt;&ndash;&gt;-->
+<!--                &lt;!&ndash;                        <div style="text-align: center; width: 33%; font-size: 14px; font-weight: bold;">&ndash;&gt;-->
+<!--                &lt;!&ndash;                            ORTA YAZI&ndash;&gt;-->
+<!--                &lt;!&ndash;                        </div>&ndash;&gt;-->
+
+<!--                &lt;!&ndash;                        &lt;!&ndash; Sağ Yazı &ndash;&gt;&ndash;&gt;-->
+<!--                &lt;!&ndash;                        <div style="text-align: center; width: 33%; font-size: 14px; font-weight: bold;">&ndash;&gt;-->
+<!--                &lt;!&ndash;                            SAĞ YAZI&ndash;&gt;-->
+<!--                &lt;!&ndash;                        </div>&ndash;&gt;-->
+
+<!--                &lt;!&ndash;                    </div>&ndash;&gt;-->
+
+
+<!--                &lt;!&ndash;                </div>&ndash;&gt;-->
+<!--            </t>-->
+<!--        </t>-->
+<!--    </template>-->
+
+<!--</odoo>-->

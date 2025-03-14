@@ -5,18 +5,24 @@
         <field name="model">mrp.production</field>
         <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
         <field name="arch" type="xml">
-            <xpath expr="//group[@name='group_extra_info']" position="before">
-                <group string="Ürün Ölçüleri">
-                    <field name="urun_adi"/>
-                    <field name="urun_aciklama"/>
-                    <field name="en"/>
-                    <field name="boy"/>
-                    <field name="uzunluk"/>
-                    <field name="agirlik"/>
-                    <field name="kalip_id"/>
-                    <field name="project_id"/>
-                </group>
+            <xpath expr="//notebook/page[last()]" position="after">
+                <page string="Ekstra Bilgiler">
+                    <group string="Ürün Ölçüleri">
+                        <field name="urun_adi"/>
+                        <field name="urun_aciklama"/>
+                        <field name="en"/>
+                        <field name="boy"/>
+                        <field name="uzunluk"/>
+                        <field name="agirlik"/>
+                        <field name="kalip_id"/>
+                        <field name="project_id"/>
+                        <field name="backorder_sequence"/>
+                        <field name="procurement_total_quant"/>
+                        <field name="proje_mikari"/>
+                    </group>
+                </page>
             </xpath>
+
         </field>
     </record>
 </odoo>

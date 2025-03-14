@@ -26,6 +26,8 @@ Long description of module's purpose
         'views/views.xml',
         'views/templates.xml',
         'views/mrp_production_views.xml',
+        'views/mrp_bom_views.xml',
+        'views/mrp_bom_line_views.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
