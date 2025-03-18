@@ -59,7 +59,7 @@
                 <div style="border: 2px solid #005F6B; padding: 10px; width: 90mm; font-family: Arial, sans-serif;">
 
                     <div style="text-align: center; font-weight: bold; font-size: 12px; margin-bottom:5px; ">
-                        <t t-esc="uretim.urun_adi" />
+                        <t t-esc="uretim.product_id.name" />
 
                     </div>
 
@@ -75,7 +75,7 @@
                         </tr>
                         <tr>
                             <td><strong>Kalıp Kodu</strong></td>
-                            <td><t t-esc="uretim.kalip_id.code" /></td>
+                            <td><t t-esc="uretim.kalip_id" /></td>
                         </tr>
                         <tr>
                             <td><strong>Sorumlu Şef</strong></td>
