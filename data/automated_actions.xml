@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1"> <record id="action_create_project_task_on_mo_done" model="ir.actions.server">
+            <field name="name">Üretim Tamamlanınca Proje Görevi Oluştur</field>
+            <field name="model_id" ref="mrp.model_mrp_production"/>
+            <field name="binding_model_id" ref="mrp.model_mrp_production"/> <field name="state">code</field>
+            <field name="trigger">on_write</field>
+            <field name="domain_force">[
+                ('state', '=', 'done'),
+                ('lot_producing_id', '!=', False),
+                ('project_id', '!=', False)
+            ]</field>
+            <field name="code">
+# Mevcut üretim emirleri üzerinde döngü (genellikle on_write ile tek kayıt gelir)
+for production in records:
+    # Gerekli alanların dolu olduğunu tekrar kontrol et (güvenlik amaçlı)
+    if production.project_id and production.lot_producing_id and production.product_id:
+        # Görev adını oluştur: Ürün Adı + Seri Numarası
+        task_name = f"{production.product_id.name} {production.lot_producing_id.name}"
+
+        # Proje görevini oluşturmak için değerleri hazırla
+        task_vals = {
+            'name': task_name,
+            'project_id': production.project_id.id,
+            # İsterseniz buraya başka varsayılan değerler ekleyebilirsiniz:
+            # 'user_id': production.user_id.id, # Üretimden sorumlu kişiye atama
+            # 'date_deadline': production.date_planned_finished, # Bitiş tarihi atama
+            'description': f"'{production.name}' üretim emrinden otomatik oluşturuldu.", # Açıklama ekleme
+        }
+
+        # Yeni proje görevini oluştur
+        env['project.task'].create(task_vals)
+            </field>
+        </record>
+
+    </data>
+</odoo>

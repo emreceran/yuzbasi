@@ -33,3 +33,4 @@ class MRPProduction(models.Model):
             if computed_quantity is not None:
                 values["product_uom_qty"] = computed_quantity
         return values
+

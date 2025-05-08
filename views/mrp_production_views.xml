@@ -13,6 +13,7 @@
                         <field name="en"/>
                         <field name="boy"/>
                         <field name="uzunluk"/>
+                        <field name="yogunluk"/>
                         <field name="agirlik"/>
                         <field name="kalip_id"/>
                         <field name="project_id"/>

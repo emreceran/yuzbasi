@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="view_task_form2_inherit_yuzbasi_lot" model="ir.ui.view">
+            <field name="name">project.task.form.inherit.yuzbasi.lot</field>
+            <field name="model">project.task</field>
+            <field name="inherit_id" ref="project.view_task_form2"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='user_ids']" position="after">
+                    <field name="x_lot_id"/>
+                     </xpath>
+            </field>
+        </record>
+
+       <record id="view_task_kanban_inherit_yuzbasi_lot_after_partner" model="ir.ui.view">
+                <field name="name">project.task.kanban.inherit.yuzbasi.lot.partner</field>
+                <field name="model">project.task</field>
+                <field name="inherit_id" ref="project.view_task_kanban"/>
+                <field name="arch" type="xml">
+
+                    <xpath expr="//field[@name='partner_id']/ancestor::span[1]" position="after">
+                        <div style="display: block; margin-top: 4px;"> <small> <i class="fa fa-barcode me-1" aria-label="Lot/Seri No" title="Lot/Seri No"/>
+                                <span t-if="record.x_lot_id.raw_value">
+                                    <field name="x_lot_id" display="display_name"/>
+                                </span>
+                                <span t-else="" class="text-muted fst-italic">
+                                    Seri No Yok
+                                </span>
+                            </small>
+                        </div>
+                    </xpath>
+
+                </field>
+            </record>
+
+    </data>
+</odoo>
