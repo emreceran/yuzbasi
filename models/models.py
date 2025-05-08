@@ -146,9 +146,9 @@ class MrpProduction(models.Model):
                         val_int = 0
                         _logger.warning(f"Özellik ('{attr_name}':'{val_name}') tamsayıya çevrilemedi (Ürün: {rec.product_id.display_name})")
 
-                    if attr_name == "En Kesit (cm)":
+                    if attr_name == "en":
                         en_int = val_int
-                    elif attr_name == "En Kesit (cm)":
+                    elif attr_name == "boy":
                         boy_int = val_int
             rec.en = en_int
             rec.boy = boy_int
