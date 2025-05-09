@@ -99,13 +99,37 @@ class MrpProduction(models.Model):
     # source_procurement_group_id kaldırılabilir eğer özel bir amacı yoksa.
     # sale_id ve project_id'nin compute metodları aşağıda düzeltildi.
 
-    sale_id = fields.Many2one(
-        comodel_name="sale.order",
-        string="Satış Siparişi",
-        compute='_compute_sale_id', # compute ile almak daha esnek
-        store=True,
-        readonly=True,
-    )
+    # source_procurement_group_id = fields.Many2one(
+    #     comodel_name="procurement.group",
+    #     readonly=True,
+    # )
+    # sale_id = fields.Many2one(
+    #     comodel_name="sale.order",
+    #     string="Sale order",
+    #     readonly=True,
+    #     store=True,
+    #     related="source_procurement_group_id.sale_id",
+    # )
+    # partner_id = fields.Many2one(
+    #     comodel_name="res.partner",
+    #     related="sale_id.partner_id",
+    #     string="Customer",
+    #     store=True,
+    # )
+    # commitment_date = fields.Datetime(
+    #     related="sale_id.commitment_date", string="Commitment Date", store=True
+    # )
+    # client_order_ref = fields.Char(
+    #     related="sale_id.client_order_ref", string="Customer Reference", store=True
+    # )
+
+    # sale_id1 = fields.Many2one(
+    #     comodel_name="sale.order",
+    #     string="Satış Siparişi",
+    #     compute='_compute_sale_id', # compute ile almak daha esnek
+    #     store=True,
+    #     readonly=True,
+    # )
     project_id = fields.Many2one(
         'project.project',
         string="Proje",
@@ -283,249 +307,3 @@ class MrpProduction(models.Model):
             else:
                 rec.project_id = False
 
-
-
-
-# # -*- coding: utf-8 -*-
-#
-# from odoo import models, fields, api
-# import re # Regex modülünü import et
-# import logging
-#
-# _logger = logging.getLogger(__name__)
-#
-#
-# class MrpProduction(models.Model):
-#     _inherit = "mrp.production"
-#
-#     en = fields.Char(string="En (cm)", compute="_compute_en", readonly=False,)
-#     boy = fields.Char(string="Boy (cm)", compute="_compute_boy", readonly=False,)
-#
-#     hacim = fields.Float(string="Hacim (kg)", compute="_compute_hacim", readonly=False,)
-#
-#     kalip_id = fields.Char(string="Kalip",  compute="_compute_kalip")
-#
-#     procurement_total_quant = fields.Integer(string="Toplam Talep", compute="_compute_production_progress")
-#     proje_mikari = fields.Char(string="Proje Miktarı", compute = "_compute_proje_miktari")
-#
-#     source_procurement_group_id = fields.Many2one(
-#         comodel_name="procurement.group",
-#         readonly=True,
-#     )
-#     sale_id = fields.Many2one(
-#         comodel_name="sale.order",
-#         string="Sale order",
-#         readonly=True,
-#         store=True,
-#         related="source_procurement_group_id.sale_id",
-#     )
-#
-#     project_id = fields.Many2one(
-#         'project.project',
-#         string="Proje",
-#         compute="_compute_project_id",
-#         store=True,
-#         readonly=False,  # Gerekirse editable yapabilirsin
-#     )
-#
-#     # --- Yoğunluk Alanı (Yeni) ---
-#     yogunluk = fields.Float(
-#         string="Yoğunluk (g/cm³)",
-#         default=2.5,  # Varsayılan değer 2.5
-#         readonly=False,  # Manuel olarak değiştirilebilir
-#         store=True,  # Veritabanında saklansın
-#         help="Malzemenin yoğunluğu (varsayılan: 2.5 g/cm³)."
-#     )
-#
-#     agirlik = fields.Float(
-#         string="Ağırlık (kg)",
-#         compute="_compute_agirlik",  # Yeni veya güncellenmiş compute metodu
-#         store=True,  # Hesaplanan değer saklansın
-#         readonly=True,  # Hesaplanan alan, genellikle değiştirilmez
-#         help="Hesaplanan ağırlık: En(cm) x Boy(cm) x Uzunluk(cm) x Yoğunluk(g/cm³) / 1000"
-#     )
-#
-#     # === Ağırlık İçin COMPUTE METODU ===
-#     @api.depends('en', 'boy', 'uzunluk', 'yogunluk')
-#     def _compute_agirlik(self):
-#         """
-#         Ağırlığı En, Boy, Uzunluk (cm) ve Yoğunluk (g/cm³) kullanarak kg
-#         cinsinden hesaplar.
-#         """
-#         for rec in self:
-#             try:
-#                 # Boyutları ve yoğunluğu alalım (None ise 0 kabul edelim)
-#                 # En/Boy Float, Uzunluk Integer, Yoğunluk Float varsayılıyor
-#                 en_cm = rec.en or 0.0
-#                 boy_cm = rec.boy or 0.0
-#                 # Uzunluk Integer olduğu için hesaplamada float'a çevirelim
-#                 uzunluk_cm = float(rec.uzunluk or 0)
-#                 dens_g_cm3 = rec.yogunluk or 0.0
-#
-#                 # Hesaplama sadece tüm değerler pozitifse anlamlıdır
-#                 if en_cm > 0 and boy_cm > 0 and uzunluk_cm > 0 and dens_g_cm3 > 0:
-#                     hacim_cm3 = en_cm * boy_cm * uzunluk_cm
-#                     agirlik_gram = hacim_cm3 * dens_g_cm3
-#                     agirlik_kg = agirlik_gram / 1000.0
-#                     rec.agirlik = agirlik_kg
-#                 else:
-#                     # Geçersiz veya eksik veri durumunda ağırlık 0 olur
-#                     rec.agirlik = 0.0
-#
-#             except (ValueError, TypeError) as e:
-#                 # Hesaplama sırasında bir hata olursa loglayıp 0 atayalım
-#                 _logger.error(f"Ağırlık hesaplama hatası (Kayıt ID: {rec.id}): {e}", exc_info=True)
-#                 rec.agirlik = 0.0
-#
-#     @api.depends('source_procurement_group_id.sale_id.project_ids')
-#     def _compute_project_id(self):
-#         for rec in self:
-#             sale_order = rec.source_procurement_group_id.sale_id
-#             if sale_order and sale_order.project_ids:
-#                 rec.project_id = sale_order.project_ids[0]
-#             else:
-#                 rec.project_id = False
-#
-#     def _compute_en(self):
-#         for rec in self:
-#             en_attribs = rec.product_variant_attributes.filtered(lambda attr: attr.attribute_id.name == "En")
-#             print(rec.product_id.product_template_variant_value_ids)
-#             print("asa")
-#             rec.en = en_attribs.product_attribute_value_id.name
-#
-#     def _compute_boy(self):
-#         for rec in self:
-#             en_attribs = rec.product_variant_attributes.filtered(lambda attr: attr.attribute_id.name == "Boy")
-#             rec.boy = en_attribs.product_attribute_value_id.name
-#
-#
-#
-#
-#     # --- İlgili Alan Tanımları (store=False, readonly=False) ---
-#     urun_adi = fields.Char(
-#         string="Ürün Adı",
-#         compute="_compute_adi_aciklama_uzunluk_from_variants",
-#         # store=True, # KALDIRILDI
-#         readonly=False,  # EKLENDİ
-#         help="Otomatik hesaplanır, ancak manuel olarak değiştirilebilir."
-#     )
-#     urun_aciklama = fields.Text(  # veya fields.Char
-#         string="Ürün Açıklama",
-#         compute="_compute_adi_aciklama_uzunluk_from_variants",
-#         # store=True, # KALDIRILDI
-#         readonly=False,  # EKLENDİ
-#         help="Otomatik hesaplanır, ancak manuel olarak değiştirilebilir."
-#     )
-#     uzunluk = fields.Integer(
-#         string="Uzunluk",
-#         compute="_compute_adi_aciklama_uzunluk_from_variants",
-#         # store=True, # KALDIRILDI
-#         readonly=False,  # EKLENDİ
-#         help="Otomatik hesaplanır (Tamsayı), ancak manuel olarak değiştirilebilir."
-#     )
-#
-#     # === İlgili COMPUTE METODU ===
-#     # Bu metodun içeriği öncekiyle aynı kalır, çünkü hesaplama mantığı değişmedi.
-#     # Sadece alan tanımları değişti.
-#     @api.depends('product_description_variants', 'product_id')
-#     def _compute_adi_aciklama_uzunluk_from_variants(self):
-#         """
-#         product_description_variants alanından regex kullanarak ürün adı,
-#         ürün açıklama ve uzunluk değerlerini çıkarır ve ilgili alanlara atar.
-#         Uzunluk tamsayı olarak atanır. Alanlar readonly=False olduğu için
-#         bu metodun hesapladığı değerler başlangıç değeri gibidir, üzerine yazılabilir.
-#         """
-#         # Regex Kalıpları (Büyük/küçük harf duyarsız)
-#         pattern_adi = re.compile(r"ürün adı:\s*ürün adı:\s*(.*?)\s*(?:ürün açıklama:|uzunluk:|$)", re.IGNORECASE)
-#         pattern_aciklama = re.compile(r"ürün açıklama:\s*ürün açıklama:\s*(.*?)\s*(?:uzunluk:|$)", re.IGNORECASE)
-#         pattern_uzunluk = re.compile(r"uzunluk:\s*uzunluk:\s*(\d+(?:[.,]\d+)?)\b", re.IGNORECASE)
-#
-#         for rec in self:
-#             # Kaynak string'i al
-#             source_string = rec.product_description_variants
-#             extracted_adi = ""
-#             extracted_aciklama = ""
-#             uzunluk_int = 0  # Integer için varsayılan değer
-#
-#             if source_string:
-#                 # 1. Ürün Adı
-#                 match_adi = pattern_adi.search(source_string)
-#                 if match_adi:
-#                     extracted_adi = match_adi.group(1).strip()
-#
-#                 # 2. Ürün Açıklama
-#                 match_aciklama = pattern_aciklama.search(source_string)
-#                 if match_aciklama:
-#                     extracted_aciklama = match_aciklama.group(1).strip()
-#
-#                 # 3. Uzunluk
-#                 match_uzunluk = pattern_uzunluk.search(source_string)
-#                 if match_uzunluk:
-#                     extracted_uzunluk_str = match_uzunluk.group(1)
-#                     try:
-#                         # Önce float'a çevir, sonra integer'a çevir
-#                         uzunluk_int = int(float(extracted_uzunluk_str.replace(',', '.')))
-#                     except ValueError:
-#                         _logger.warning(
-#                             f"Uzunluk değeri ('{extracted_uzunluk_str}') sayıya/tamsayıya çevrilemedi. Kaynak: '{source_string}', Kayıt ID: {rec.id}")
-#                         uzunluk_int = 0
-#
-#             # Fallback for urun_adi
-#             if not extracted_adi and rec.product_id:
-#                 extracted_adi = rec.product_id.display_name
-#
-#             # Hesaplanan değerleri ilgili alanlara ata
-#             # Not: Eğer kullanıcı bu alanları manuel olarak değiştirdiyse ve
-#             # 'product_description_variants' değişmediyse, bu atamalar
-#             # bir sonraki form açılışında/kaydedilişinde tekrar yapılabilir.
-#             # Kalıcı manuel değişiklik için inverse fonksiyon gerekebilir.
-#             rec.urun_adi = extracted_adi
-#             rec.urun_aciklama = extracted_aciklama
-#             rec.uzunluk = uzunluk_int
-#
-#
-#
-#     # @api.depends("en", "boy", "uzunluk")
-#     # def _compute_agirlik(self):
-#     #     for rec in self:
-#     #         rec.agirlik = int(rec.en) + int(rec.boy) + 10
-#
-#     @api.depends("procurement_group_id.mrp_production_ids.product_qty")
-#     def _compute_production_progress(self):
-#         for rec in self:
-#             mrp_productions = rec.procurement_group_id.mrp_production_ids
-#             if not mrp_productions:
-#                 rec.remaining_quantity = 0
-#                 continue
-#
-#
-#             # Toplam üretilen miktarı hesapla
-#             total_produced = sum(mrp_productions.mapped("product_qty"))
-#
-#             # İlk üretimden kalan miktarı hesapla
-#             rec.procurement_total_quant = total_produced
-#
-#     @api.depends("sale_id")
-#     def _compute_proje(self):
-#         for rec in self:
-#             rec.project_id = "asa"
-#
-#             hast = [rec.sale_id.project_ids]
-#             rec.project_id =hast[0].name
-#             print(hast)
-#             # total_quantity = sum(rec.procurement_group_id.mrp_production_ids.mapped("product_qty"))
-#             # rec.project_id = total_quantity
-#
-#     @api.depends("sale_id")
-#     def _compute_kalip(self):
-#         for rec in self:
-#             rec.kalip_id = "asa"
-#             oplar = [rec.workorder_ids][0]
-#             rec.kalip_id = oplar.workcenter_id.name
-#
-#
-#
-#
-#     def _compute_proje_miktari(self):
-#         for rec in self:
-#             rec.proje_mikari = str(rec.backorder_sequence) + " / " +  str(rec.procurement_total_quant)

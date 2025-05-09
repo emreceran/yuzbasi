@@ -16,6 +16,7 @@
                         <field name="yogunluk"/>
                         <field name="agirlik"/>
                         <field name="kalip_id"/>
+                        <field name="sale_id"/>
                         <field name="project_id"/>
                         <field name="backorder_sequence"/>
                         <field name="procurement_total_quant"/>
